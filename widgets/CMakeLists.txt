@@ -15,13 +15,26 @@ find_package(Qt6 COMPONENTS
         REQUIRED
 )
 
+file(GLOB_RECURSE THIRD_PARTY_FILES
+        ${CMAKE_SOURCE_DIR}/3rdparty/*.hpp
+        ${CMAKE_SOURCE_DIR}/3rdparty/*.cpp
+        ${CMAKE_SOURCE_DIR}/3rdparty/*.h
+        ${CMAKE_SOURCE_DIR}/3rdparty/*.cc
+)
 file(GLOB_RECURSE COMMON_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/common/*
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/common/*.hpp
 )
 file(GLOB_RECURSE COMPONENTS_FILES
-        ${CMAKE_CURRENT_SOURCE_DIR}/components/*
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/*.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/*.cc
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/*.hpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/components/*.cpp
 )
 list(APPEND SOURCE_FILES
+        ${THIRD_PARTY_FILES}
         ${COMMON_FILES}
         ${COMPONENTS_FILES}
 )
