@@ -1,2 +1,2 @@
-# QT-Fluent-Widgets
-QT Fluent Styled Widgets for C++.
+# QT-SimpleLine-Widgets
+QT simple line styled widgets for C++.
