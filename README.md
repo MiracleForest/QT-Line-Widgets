@@ -1,2 +1,2 @@
-# QT-SimpleLine-Widgets
-QT simple line styled widgets for C++.
+# QT-Line-Widgets
+QT simple widgets for C++.
