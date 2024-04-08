@@ -22,9 +22,10 @@ class StyleSheetManager : public QObject {
 
 public:
     ~StyleSheetManager() = default;
-    StyleSheetManager *instance();
+    static StyleSheetManager *instance();
     void reg(StyleSheetBase *source, QWidget *widget);
     void deReg(QWidget *widget);
+    auto &items();
 
 private:
     explicit StyleSheetManager();
@@ -107,8 +108,12 @@ public:
         setLightStyleSheet(light_qss);
         setDarkStyleSheet(dark_qss);
     }
-    void setLightStyleSheet(const QString &qss) { _widget->setStyleSheet(qss); }
-    void setDarkStyleSheet(const QString &qss) { _widget->setStyleSheet(qss); }
+    void setLightStyleSheet(const QString &qss) {
+        _widget->setProperty(LIGHT_QSS_KEY, qss);
+    }
+    void setDarkStyleSheet(const QString &qss) {
+        _widget->setProperty(DARK_QSS_KEY, qss);
+    }
     QString lightStyleSheet() const {
         auto s = _widget->property(LIGHT_QSS_KEY);
         return !s.isNull() ? s.toString() : "";
@@ -130,23 +135,34 @@ private:
 class CustomStyleSheetWatcher : public QObject {
     Q_OBJECT;
 
-    bool eventFilter(QObject *watched, QEvent *event) override {
-        if (event->type() == QEvent::DynamicPropertyChange) {
-            auto e = dynamic_cast<QDynamicPropertyChangeEvent *>(event);
-            QString name{e->propertyName()};
-            if (name == CustomStyleSheet::LIGHT_QSS_KEY ||
-                name == CustomStyleSheet::DARK_QSS_KEY) {
-                // todo add stylesheet
-            }
-        }
-        return QObject::eventFilter(watched, event);
-    }
+public:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+};
+class LineStyleSheetWatcher : public QObject {
+    Q_OBJECT;
+
+public:
+    static const char *LINE_PROPERTY_KEY;
+    bool eventFilter(QObject *watched, QEvent *event) override;
 };
 
 // 从文件获取样式
 QString getStyleSheetFromFile(const QString &path);
+QString getStyleSheet(StyleSheetBase *source, Theme theme = Theme::LIGHT);
+QString getStyleSheet(const QString &path, Theme theme = Theme::LIGHT);
 // 设置样式
 void setStyleSheet(QWidget *widget, StyleSheetBase *source,
                    Theme theme = Theme::LIGHT);
+// 设置自定义样式
+void setCustomStyleSheet(QWidget *widget, const QString &light_qss,
+                         const QString &dark_qss);
+// 添加样式
+void addStyleSheet(QWidget *widget, StyleSheetBase *source,
+                   Theme theme = Theme::LIGHT, bool reg = true);
+void addStyleSheet(QWidget *widget, const QString &path,
+                   Theme theme = Theme::LIGHT, bool reg = true);
+
+// 更新样式
+void updateStyleSheet(bool lazy = false);
 
 } // namespace QLW
