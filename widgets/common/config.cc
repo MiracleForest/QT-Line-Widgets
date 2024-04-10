@@ -36,7 +36,7 @@ void Config::load() {
             while (!ts.atEnd()) {
                 content.append(ts.readLine());
             }
-            _cfg = Json::parse(content);
+            _cfg = Json::parse(content.toStdString());
         } catch (...) {
             qCritical() << "load config error!";
         }

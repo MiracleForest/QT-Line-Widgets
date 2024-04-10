@@ -1,4 +1,6 @@
 target("example")
+	set_languages("c++20")
 	add_rules("qt.widgetapp")
 	add_deps("qt_line_widgets_static")
+	add_cxxflags("/source-charset:utf-8", { tools = {"cl", "win32_msvc"}}, {force = true})
 	add_files("test.cc")

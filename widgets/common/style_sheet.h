@@ -15,52 +15,98 @@
 namespace QLW {
 
 class StyleSheetBase;
-class StyleSheetManagerPrivate;
+class CustomStyleSheetWatcher;
+class LineStyleSheetWatcher;
+
 // 样式管理
 class StyleSheetManager : public QObject {
     Q_OBJECT;
 
 public:
+    class Item {
+    public:
+        Item() = default;
+        explicit Item(StyleSheetBase *s, CustomStyleSheetWatcher *c_watcher,
+                      LineStyleSheetWatcher *l_watcher)
+            : source(s), custom_watcher(c_watcher), line_watcher(l_watcher) {}
+        ~Item() = default;
+
+    public:
+        QSharedPointer<StyleSheetBase> source;
+        QSharedPointer<CustomStyleSheetWatcher> custom_watcher;
+        QSharedPointer<LineStyleSheetWatcher> line_watcher;
+    };
+
+public:
     ~StyleSheetManager() = default;
     static StyleSheetManager *instance();
-    void reg(StyleSheetBase *source, QWidget *widget);
+    void reg(StyleSheetBase *source, QWidget *widget, bool reset = true);
     void deReg(QWidget *widget);
     auto &items();
 
 private:
     explicit StyleSheetManager();
+    void init();
 
-private:
+protected:
     static StyleSheetManager *Self;
-
-private:
-    const QScopedPointer<StyleSheetManagerPrivate> d_ptr;
-    Q_DECLARE_PRIVATE(StyleSheetManager);
+    QMap<QWidget *, Item> _widgets;
 
 }; // StyleSheetManager
+
+// 事件过滤器
+class CustomStyleSheetWatcher : public QObject {
+    Q_OBJECT;
+
+public:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+};
+class LineStyleSheetWatcher : public QObject {
+    Q_OBJECT;
+
+public:
+    static const char *LINE_PROPERTY_KEY;
+    bool eventFilter(QObject *watched, QEvent *event) override;
+};
 
 // 基础样式
 class StyleSheetBase {
 public:
     StyleSheetBase() = default;
     virtual ~StyleSheetBase() = default;
-    // 样式路径
+    // 样式路径，必须实现
     virtual QString stylePath(Theme theme = Theme::LIGHT) = 0;
     // 样式内容
     virtual QString styleContent(Theme theme = Theme::LIGHT);
-    // 应用
+    // 应用样式
     void apply(QWidget *widget, Theme theme = Theme::LIGHT);
 
 }; // class StyleSheetBase
 
+class StyleSheetCompose : public StyleSheetBase {
+public:
+    StyleSheetCompose(std::initializer_list<StyleSheetBase *> list);
+    ~StyleSheetCompose() override;
+    QString stylePath(Theme theme = Theme::LIGHT) override { return ""; }
+    QString styleContent(Theme theme = Theme::LIGHT) override;
+
+    void add(StyleSheetBase *source);
+    void remove(StyleSheetBase *source);
+
+private:
+    QList<StyleSheetBase *> _list;
+};
+
+// 内置样式
 enum LineStyleSheetEnum {
     BUTTON,
-};
+}; // enum LineStyleSheetEnum
 
 template <LineStyleSheetEnum E> class LineStyleSheet : public StyleSheetBase {
 public:
     ~LineStyleSheet() override = default;
 
+    // 根据枚举获取 qss 文件名
     constexpr const char *Str() const {
         if constexpr (E == BUTTON) {
             return "button";
@@ -76,6 +122,7 @@ public:
     }
 };
 
+// 基于文件的样式
 class FileStyleSheet : public StyleSheetBase {
 public:
     FileStyleSheet(const QString &path) : _path(path) {}
@@ -95,13 +142,7 @@ public:
 
     QString stylePath(Theme theme = Theme::LIGHT) override { return ""; }
 
-    QString styleContent(Theme theme = Theme::LIGHT) override {
-        theme = Config::instance()->getTheme();
-        if (theme == Theme::LIGHT) {
-            return lightStyleSheet();
-        }
-        return darkStyleSheet();
-    }
+    QString styleContent(Theme theme = Theme::LIGHT) override;
 
     void setCustomStyleSheet(const QString &light_qss,
                              const QString &dark_qss) {
@@ -131,38 +172,30 @@ private:
     QWidget *_widget;
 };
 
-// 事件过滤器
-class CustomStyleSheetWatcher : public QObject {
-    Q_OBJECT;
-
-public:
-    bool eventFilter(QObject *watched, QEvent *event) override;
-};
-class LineStyleSheetWatcher : public QObject {
-    Q_OBJECT;
-
-public:
-    static const char *LINE_PROPERTY_KEY;
-    bool eventFilter(QObject *watched, QEvent *event) override;
-};
-
-// 从文件获取样式
+// 从文件获取样式内容
 QString getStyleSheetFromFile(const QString &path);
-QString getStyleSheet(StyleSheetBase *source, Theme theme = Theme::LIGHT);
-QString getStyleSheet(const QString &path, Theme theme = Theme::LIGHT);
-// 设置样式
-void setStyleSheet(QWidget *widget, StyleSheetBase *source,
-                   Theme theme = Theme::LIGHT);
-// 设置自定义样式
+// 从 StyleSheet 获取主题样式内容
+QString getThemeStyleSheet(StyleSheetBase *source, Theme theme = Theme::LIGHT);
+// 从文件路径获取主题样式内容
+QString getThemeStyleSheet(const QString &path, Theme theme = Theme::LIGHT);
+// 为组件设置主题样式
+void setThemeStyleSheet(QWidget *widget, StyleSheetBase *source,
+                        Theme theme = Theme::LIGHT, bool reg = true);
+// 为组件设置自定义样式
 void setCustomStyleSheet(QWidget *widget, const QString &light_qss,
                          const QString &dark_qss);
-// 添加样式
-void addStyleSheet(QWidget *widget, StyleSheetBase *source,
-                   Theme theme = Theme::LIGHT, bool reg = true);
-void addStyleSheet(QWidget *widget, const QString &path,
-                   Theme theme = Theme::LIGHT, bool reg = true);
+// 为组件添加主题样式
+void addThemeStyleSheet(QWidget *widget, StyleSheetBase *source,
+                        Theme theme = Theme::LIGHT, bool reg = true);
+void addThemeStyleSheet(QWidget *widget, const QString &path,
+                        Theme theme = Theme::LIGHT, bool reg = true);
 
 // 更新样式
 void updateStyleSheet(bool lazy = false);
+
+// 设置主题
+void setTheme(Theme theme);
+// 切换主题
+void toggleTheme();
 
 } // namespace QLW

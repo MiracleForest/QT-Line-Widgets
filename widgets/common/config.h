@@ -28,8 +28,10 @@ public:
     static Config *instance(const QString &path = "config/config.json");
     // 保存配置
     void save();
-    inline Theme getTheme() const;
-    inline void setTheme(Theme theme);
+    // 获取主题
+    Theme getTheme() const;
+    // 设置主题
+    void setTheme(Theme theme);
 
 private:
     explicit Config(const QString &path);
