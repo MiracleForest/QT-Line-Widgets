@@ -33,6 +33,8 @@ public:
     // 设置主题
     void setTheme(Theme theme);
 
+    Json operator()() { return _cfg; }
+
 private:
     explicit Config(const QString &path);
     void load();

@@ -5,12 +5,14 @@
 
 #pragma once
 
-#include "config.h"
 #include <QEvent>
 #include <QObject>
 #include <QVariant>
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <format>
+
+#include "3rdparty/magic_enum/magic_enum.hpp"
+#include "config.h"
 
 namespace QLW {
 
@@ -99,24 +101,17 @@ private:
 
 // 内置样式
 enum LineStyleSheetEnum {
-    BUTTON,
+    Alert,
 }; // enum LineStyleSheetEnum
 
 template <LineStyleSheetEnum E> class LineStyleSheet : public StyleSheetBase {
 public:
     ~LineStyleSheet() override = default;
 
-    // 根据枚举获取 qss 文件名
-    constexpr const char *Str() const {
-        if constexpr (E == BUTTON) {
-            return "button";
-        }
-    }
-
     QString stylePath(Theme theme = Theme::LIGHT) override {
         theme = Config::instance()->getTheme();
         const char *t = (theme == Theme::LIGHT) ? "light" : "dark";
-        const char *path = Str();
+        auto path = magic_enum::enum_name(E);
         return QString::fromStdString(
             std::format(":/qlw/qss/{}/{}.qss", t, path));
     }
