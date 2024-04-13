@@ -3,14 +3,17 @@
 #include <QMainWindow>
 #include <QPushButton>
 
-class MyStyleSheet : public QLW::StyleSheetBase {
+class MyStyleSheet : public QLW::StyleSheetBase
+{
 public:
     ~MyStyleSheet() = default;
 
-    QString stylePath(QLW::Theme theme = QLW::Theme::LIGHT) override {
+    QString stylePath(QLW::Theme theme = QLW::Theme::LIGHT) override
+    {
         return "";
     }
-    QString styleContent(QLW::Theme theme = QLW::Theme::LIGHT) override {
+    QString styleContent(QLW::Theme theme = QLW::Theme::LIGHT) override
+    {
         if (theme == QLW::LIGHT) {
             return "QPushButton { background-color: #f5f5f5; color: #232730; }";
         } else {
@@ -19,7 +22,8 @@ public:
     }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
     QApplication app(argc, argv);
     QMainWindow window;
     window.setMinimumSize(640, 380);

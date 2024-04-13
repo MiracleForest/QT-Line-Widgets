@@ -6,16 +6,22 @@
 #include <QTextStream>
 #include <QtDebug>
 
-namespace QLW {
+namespace QLW
+{
 
 const char *Config::THEME_KEY = "theme";
 Config *Config::Self = nullptr;
 
-Config::Config(const QString &path) : _path(path) { this->load(); }
+Config::Config(const QString &path)
+    : _path(path)
+{
+    this->load();
+}
 
 Config::~Config() { this->save(); }
 
-Config *Config::instance(const QString &path) {
+Config *Config::instance(const QString &path)
+{
     if (Config::Self == nullptr) {
         static QMutex mutex;
         QMutexLocker locker{&mutex};
@@ -27,7 +33,8 @@ Config *Config::instance(const QString &path) {
     return Config::Self;
 }
 
-void Config::load() {
+void Config::load()
+{
     QFile file(_path);
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
         QTextStream ts(&file);
@@ -44,7 +51,8 @@ void Config::load() {
     }
 }
 
-void Config::save() {
+void Config::save()
+{
     QSaveFile file(_path);
     try {
         auto content = _cfg.dump(4);
@@ -56,7 +64,8 @@ void Config::save() {
     file.commit();
 }
 
-Theme Config::getTheme() const {
+Theme Config::getTheme() const
+{
     Theme theme = Theme::LIGHT;
     if (_cfg.contains(THEME_KEY) && _cfg[THEME_KEY].is_string()) {
         std::string t;
@@ -66,7 +75,8 @@ Theme Config::getTheme() const {
     return theme;
 }
 
-void Config::setTheme(Theme theme) {
+void Config::setTheme(Theme theme)
+{
     const char *t = (theme == Theme::DARK) ? "dark" : "light";
     _cfg[THEME_KEY] = t;
     emit on_ThemeChanged(theme);

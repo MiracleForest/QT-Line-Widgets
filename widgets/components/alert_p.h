@@ -6,11 +6,13 @@ class QPushButton;
 class QPixmap;
 class QLabel;
 
-namespace QLW {
+namespace QLW
+{
 
 class Alert;
 
-class AlertPrivate {
+class AlertPrivate
+{
     Q_DISABLE_COPY(AlertPrivate);
     Q_DECLARE_PUBLIC(QLW::Alert);
 

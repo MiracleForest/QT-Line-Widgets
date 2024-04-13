@@ -14,23 +14,30 @@
 #include "3rdparty/magic_enum/magic_enum.hpp"
 #include "config.h"
 
-namespace QLW {
+namespace QLW
+{
 
 class StyleSheetBase;
 class CustomStyleSheetWatcher;
 class LineStyleSheetWatcher;
 
 // 样式管理
-class StyleSheetManager : public QObject {
+class StyleSheetManager : public QObject
+{
     Q_OBJECT;
 
 public:
-    class Item {
+    class Item
+    {
     public:
         Item() = default;
         explicit Item(StyleSheetBase *s, CustomStyleSheetWatcher *c_watcher,
                       LineStyleSheetWatcher *l_watcher)
-            : source(s), custom_watcher(c_watcher), line_watcher(l_watcher) {}
+            : source(s)
+            , custom_watcher(c_watcher)
+            , line_watcher(l_watcher)
+        {
+        }
         ~Item() = default;
 
     public:
@@ -57,13 +64,15 @@ protected:
 }; // StyleSheetManager
 
 // 事件过滤器
-class CustomStyleSheetWatcher : public QObject {
+class CustomStyleSheetWatcher : public QObject
+{
     Q_OBJECT;
 
 public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 };
-class LineStyleSheetWatcher : public QObject {
+class LineStyleSheetWatcher : public QObject
+{
     Q_OBJECT;
 
 public:
@@ -72,7 +81,8 @@ public:
 };
 
 // 基础样式
-class StyleSheetBase {
+class StyleSheetBase
+{
 public:
     StyleSheetBase() = default;
     virtual ~StyleSheetBase() = default;
@@ -85,7 +95,8 @@ public:
 
 }; // class StyleSheetBase
 
-class StyleSheetCompose : public StyleSheetBase {
+class StyleSheetCompose : public StyleSheetBase
+{
 public:
     StyleSheetCompose(std::initializer_list<StyleSheetBase *> list);
     ~StyleSheetCompose() override;
@@ -100,15 +111,18 @@ private:
 };
 
 // 内置样式
-enum LineStyleSheetEnum {
+enum LineStyleSheetEnum
+{
     Alert,
 }; // enum LineStyleSheetEnum
 
-template <LineStyleSheetEnum E> class LineStyleSheet : public StyleSheetBase {
+template <LineStyleSheetEnum E> class LineStyleSheet : public StyleSheetBase
+{
 public:
     ~LineStyleSheet() override = default;
 
-    QString stylePath(Theme theme = Theme::LIGHT) override {
+    QString stylePath(Theme theme = Theme::LIGHT) override
+    {
         theme = Config::instance()->getTheme();
         const char *t = (theme == Theme::LIGHT) ? "light" : "dark";
         auto path = magic_enum::enum_name(E);
@@ -118,9 +132,13 @@ public:
 };
 
 // 基于文件的样式
-class FileStyleSheet : public StyleSheetBase {
+class FileStyleSheet : public StyleSheetBase
+{
 public:
-    FileStyleSheet(const QString &path) : _path(path) {}
+    FileStyleSheet(const QString &path)
+        : _path(path)
+    {
+    }
     ~FileStyleSheet() override = default;
 
     QString stylePath(Theme theme = Theme::LIGHT) override { return _path; }
@@ -130,31 +148,39 @@ private:
 };
 
 // 自定义样式
-class CustomStyleSheet : public StyleSheetBase {
+class CustomStyleSheet : public StyleSheetBase
+{
 public:
-    CustomStyleSheet(QWidget *widget) : _widget(widget) {}
+    CustomStyleSheet(QWidget *widget)
+        : _widget(widget)
+    {
+    }
     ~CustomStyleSheet() override = default;
 
     QString stylePath(Theme theme = Theme::LIGHT) override { return ""; }
 
     QString styleContent(Theme theme = Theme::LIGHT) override;
 
-    void setCustomStyleSheet(const QString &light_qss,
-                             const QString &dark_qss) {
+    void setCustomStyleSheet(const QString &light_qss, const QString &dark_qss)
+    {
         setLightStyleSheet(light_qss);
         setDarkStyleSheet(dark_qss);
     }
-    void setLightStyleSheet(const QString &qss) {
+    void setLightStyleSheet(const QString &qss)
+    {
         _widget->setProperty(LIGHT_QSS_KEY, qss);
     }
-    void setDarkStyleSheet(const QString &qss) {
+    void setDarkStyleSheet(const QString &qss)
+    {
         _widget->setProperty(DARK_QSS_KEY, qss);
     }
-    QString lightStyleSheet() const {
+    QString lightStyleSheet() const
+    {
         auto s = _widget->property(LIGHT_QSS_KEY);
         return !s.isNull() ? s.toString() : "";
     }
-    QString darkStyleSheet() const {
+    QString darkStyleSheet() const
+    {
         auto s = _widget->property(DARK_QSS_KEY);
         return !s.isNull() ? s.toString() : "";
     }

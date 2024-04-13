@@ -7,17 +7,25 @@
 
 #include <QDialog>
 
-namespace QLW {
+namespace QLW
+{
 
 class AlertPrivate;
 
-class Alert : public QDialog {
+class Alert : public QDialog
+{
     Q_OBJECT;
 
     Q_PROPERTY(QString style WRITE setStyle READ style);
 
 public:
-    enum Style { Info, Success, Error, Warn };
+    enum Style
+    {
+        Info,
+        Success,
+        Error,
+        Warn
+    };
 
 public:
     explicit Alert(QWidget *parent);

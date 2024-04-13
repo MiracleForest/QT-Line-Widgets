@@ -4,5 +4,41 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 UseTab: Never
 
+# 访问限定符偏移
 AccessModifierOffset: -4
+# 不使用 \r\n 
 UseCRLF: false
+# 参数对齐
+AlignAfterOpenBracket: Align
+# 数组初始化对齐(左对齐)
+AlignArrayOfStructures: Left
+# 宏对齐
+AlignConsecutiveMacros: AcrossEmptyLines
+# 多行转义对齐(靠左)
+AlignEscapedNewlines: Left
+# 多行操作符对齐(与等号对齐)
+AlignOperands: AlignAfterOperator
+# 尾随注释对齐
+AlignTrailingComments: Always
+# 大括号包装
+BreakBeforeBraces: Custom
+BraceWrapping: 
+  AfterClass: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  AfterExternBlock: true
+# concept 换行
+BreakBeforeConceptDeclarations: Always
+# 内联汇编冒号换行
+BreakBeforeInlineASMColon: Always
+# 三元运算符换行
+BreakBeforeTernaryOperators: true
+# 初始化器换行格式
+BreakConstructorInitializers: BeforeComma
+# 自动添加命名控件注释
+FixNamespaceComments: true
+# 模板声明始终换行 (>=clang19)
+# BreakTemplateDeclarations: Yes

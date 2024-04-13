@@ -8,15 +8,22 @@
 #include "3rdparty/json/nlohmann_json.h"
 #include <QObject>
 
-namespace QLW {
+namespace QLW
+{
 
 using Json = nlohmann::json;
 
 // 主题
-enum Theme { LIGHT, DARK, AUTO };
+enum Theme
+{
+    LIGHT,
+    DARK,
+    AUTO
+};
 
 // 配置
-class Config : public QObject {
+class Config : public QObject
+{
     Q_OBJECT;
     Q_PROPERTY(Theme theme READ getTheme WRITE setTheme);
 

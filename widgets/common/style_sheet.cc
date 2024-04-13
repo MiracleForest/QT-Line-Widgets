@@ -5,15 +5,21 @@
 #include <QMutex>
 #include <QMutexLocker>
 
-namespace QLW {
+namespace QLW
+{
 
 /*------------------- StyleSheetManager -------------------*/
 
 StyleSheetManager *StyleSheetManager::Self = nullptr;
 
-StyleSheetManager::StyleSheetManager() : QObject() { this->init(); }
+StyleSheetManager::StyleSheetManager()
+    : QObject()
+{
+    this->init();
+}
 
-StyleSheetManager *StyleSheetManager::instance() {
+StyleSheetManager *StyleSheetManager::instance()
+{
     if (StyleSheetManager::Self == nullptr) {
         static QMutex mutex;
         QMutexLocker locker{&mutex};
@@ -27,8 +33,8 @@ StyleSheetManager *StyleSheetManager::instance() {
 
 void StyleSheetManager::init() {}
 
-void StyleSheetManager::reg(StyleSheetBase *source, QWidget *widget,
-                            bool reset) {
+void StyleSheetManager::reg(StyleSheetBase *source, QWidget *widget, bool reset)
+{
 
     if (!_widgets.contains(widget)) {
         connect(widget, &QWidget::destroyed, this,
@@ -51,7 +57,8 @@ void StyleSheetManager::reg(StyleSheetBase *source, QWidget *widget,
     }
 }
 
-void StyleSheetManager::deReg(QWidget *widget) {
+void StyleSheetManager::deReg(QWidget *widget)
+{
     const auto it = _widgets.find(widget);
     if (it != _widgets.end()) {
         _widgets.erase(it);
@@ -62,11 +69,13 @@ auto &StyleSheetManager::items() { return _widgets; }
 
 /*------------------- StyleSheetBase -------------------*/
 
-QString StyleSheetBase::styleContent(Theme theme) {
+QString StyleSheetBase::styleContent(Theme theme)
+{
     return getStyleSheetFromFile(this->stylePath(theme));
 }
 
-void StyleSheetBase::apply(QWidget *widget, Theme theme) {
+void StyleSheetBase::apply(QWidget *widget, Theme theme)
+{
     setThemeStyleSheet(widget, this, theme);
 }
 
@@ -75,7 +84,8 @@ void StyleSheetBase::apply(QWidget *widget, Theme theme) {
 const char *CustomStyleSheet::LIGHT_QSS_KEY = "light_custom_qss";
 const char *CustomStyleSheet::DARK_QSS_KEY = "dark_custom_qss";
 
-QString CustomStyleSheet::styleContent(Theme theme) {
+QString CustomStyleSheet::styleContent(Theme theme)
+{
     theme = Config::instance()->getTheme();
     if (theme == Theme::LIGHT) {
         return lightStyleSheet();
@@ -85,15 +95,19 @@ QString CustomStyleSheet::styleContent(Theme theme) {
 
 StyleSheetCompose::StyleSheetCompose(
     std::initializer_list<StyleSheetBase *> list)
-    : _list(list) {}
-StyleSheetCompose::~StyleSheetCompose() {
+    : _list(list)
+{
+}
+StyleSheetCompose::~StyleSheetCompose()
+{
     for (auto it : _list) {
         if (it != nullptr) {
             delete it;
         }
     }
 }
-QString StyleSheetCompose::styleContent(Theme theme) {
+QString StyleSheetCompose::styleContent(Theme theme)
+{
     QString content;
     for (auto it : _list) {
         content.append(it->styleContent(theme));
@@ -101,13 +115,15 @@ QString StyleSheetCompose::styleContent(Theme theme) {
     }
     return content;
 }
-void StyleSheetCompose::add(StyleSheetBase *source) {
+void StyleSheetCompose::add(StyleSheetBase *source)
+{
     if (source == this || _list.contains(source)) {
         return;
     }
     _list.push_back(source);
 }
-void StyleSheetCompose::remove(StyleSheetBase *source) {
+void StyleSheetCompose::remove(StyleSheetBase *source)
+{
     _list.removeIf([source](StyleSheetBase *s) { return source == s; });
 }
 
@@ -115,7 +131,8 @@ void StyleSheetCompose::remove(StyleSheetBase *source) {
 
 const char *LineStyleSheetWatcher::LINE_PROPERTY_KEY = "line-property-key";
 
-bool CustomStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event) {
+bool CustomStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event)
+{
     if (event->type() == QEvent::DynamicPropertyChange &&
         watched->isWidgetType()) {
 
@@ -131,7 +148,8 @@ bool CustomStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event) {
     return QObject::eventFilter(watched, event);
 }
 
-bool LineStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event) {
+bool LineStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event)
+{
     if (watched->isWidgetType() &&
         !watched->property(LINE_PROPERTY_KEY).isNull() &&
         event->type() == QEvent::Paint) {
@@ -155,7 +173,8 @@ bool LineStyleSheetWatcher::eventFilter(QObject *watched, QEvent *event) {
 QString ApplyThemeColor(const QString &qss) { return qss; }
 
 // 从文件获取样式内容
-QString getStyleSheetFromFile(const QString &path) {
+QString getStyleSheetFromFile(const QString &path)
+{
     QFile file{path};
     QString content;
     if (file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -166,17 +185,20 @@ QString getStyleSheetFromFile(const QString &path) {
 }
 
 // 从 StyleSheet 获取主题样式
-QString getThemeStyleSheet(StyleSheetBase *source, Theme theme) {
+QString getThemeStyleSheet(StyleSheetBase *source, Theme theme)
+{
     return ApplyThemeColor(source->styleContent(theme));
 }
-QString getThemeStyleSheet(const QString &path, Theme theme) {
+QString getThemeStyleSheet(const QString &path, Theme theme)
+{
     QScopedPointer<FileStyleSheet> source(new FileStyleSheet(path));
     return ApplyThemeColor(source->styleContent(theme));
 }
 
 // 为组件设置主题样式
 void setThemeStyleSheet(QWidget *widget, StyleSheetBase *source, Theme theme,
-                        bool reg) {
+                        bool reg)
+{
     if (reg) {
         StyleSheetManager::instance()->reg(source, widget);
     }
@@ -184,13 +206,15 @@ void setThemeStyleSheet(QWidget *widget, StyleSheetBase *source, Theme theme,
 }
 // 设置自定义样式
 void setCustomStyleSheet(QWidget *widget, const QString &light_qss,
-                         const QString &dark_qss) {
+                         const QString &dark_qss)
+{
     CustomStyleSheet(widget).setCustomStyleSheet(light_qss, dark_qss);
 }
 
 // 添加样式
 void addThemeStyleSheet(QWidget *widget, StyleSheetBase *source, Theme theme,
-                        bool reg) {
+                        bool reg)
+{
     QString qss;
     if (reg) {
         StyleSheetManager::instance()->reg(source, widget, false);
@@ -204,7 +228,8 @@ void addThemeStyleSheet(QWidget *widget, StyleSheetBase *source, Theme theme,
     }
 }
 void addThemeStyleSheet(QWidget *widget, const QString &path, Theme theme,
-                        bool reg) {
+                        bool reg)
+{
     QString qss;
     if (reg) {
         StyleSheetManager::instance()->reg(new FileStyleSheet(path), widget,
@@ -220,7 +245,8 @@ void addThemeStyleSheet(QWidget *widget, const QString &path, Theme theme,
 }
 
 // 更新样式
-void updateStyleSheet(bool lazy) {
+void updateStyleSheet(bool lazy)
+{
     QList<QWidget *> removes;
     const auto &items = StyleSheetManager::instance()->items();
     for (auto &it : items.toStdMap()) {
@@ -246,12 +272,14 @@ void updateStyleSheet(bool lazy) {
 }
 
 // 设置主题
-void setTheme(Theme theme) {
+void setTheme(Theme theme)
+{
     Config::instance()->setTheme(theme);
     updateStyleSheet();
 }
 // 切换主题
-void toggleTheme() {
+void toggleTheme()
+{
     auto t = Config::instance()->getTheme() == Theme::DARK ? Theme::LIGHT
                                                            : Theme::DARK;
     setTheme(t);
