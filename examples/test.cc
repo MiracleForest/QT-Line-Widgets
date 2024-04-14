@@ -1,5 +1,10 @@
+#include "common/logger.h"
 #include "common/style_sheet.h"
+#include "components/alert.h"
+
 #include <QApplication>
+#include <QBoxLayout>
+#include <QGroupBox>
 #include <QMainWindow>
 #include <QPushButton>
 
@@ -22,13 +27,16 @@ public:
     }
 };
 
-int main(int argc, char **argv)
+int main(int argc, char** argv)
 {
+    QLW::SetGlobalLogLevel(QLW::LogLevel::kALL);
     QApplication app(argc, argv);
     QMainWindow window;
     window.setMinimumSize(640, 380);
 
-    auto button = new QPushButton(&window);
+    auto box = new QGroupBox(&window);
+    auto layout = new QVBoxLayout();
+    auto button = new QPushButton();
     button->setText(QLW::Config::instance()->getTheme() == QLW::Theme::DARK
                         ? "dark"
                         : "light");
@@ -40,6 +48,23 @@ int main(int argc, char **argv)
     QObject::connect(button, &QPushButton::clicked, [] { QLW::toggleTheme(); });
     (new MyStyleSheet())->apply(button, QLW::Theme::LIGHT);
 
+    auto btn1 = new QPushButton("点击");
+    QObject::connect(btn1, &QPushButton::clicked, [] {
+        QLW::Alert alert;
+        alert.setTitle("Changes saved");
+        alert.setContent("Your product changes have been saved.");
+        alert.exec();
+        // QDialog dialog;
+        // dialog.exec();
+    });
+
+    layout->addWidget(button);
+    layout->addWidget(btn1);
+    box->setTitle("test");
+    box->setLayout(layout);
+    window.setCentralWidget(box);
+
     window.show();
+
     return app.exec();
 }

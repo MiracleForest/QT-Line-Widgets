@@ -1,9 +1,9 @@
 #pragma once
 
+#include <QString>
 #include <QtGlobal>
 
 class QPushButton;
-class QPixmap;
 class QLabel;
 
 namespace QLW
@@ -17,21 +17,29 @@ class AlertPrivate
     Q_DECLARE_PUBLIC(QLW::Alert);
 
 public:
-    AlertPrivate(QLW::Alert *q);
+    AlertPrivate(QLW::Alert* q);
     ~AlertPrivate();
 
     void init();
 
-    QLW::Alert *const q_ptr;
+public:
+    QLW::Alert* const q_ptr;
 
     // Logo
-    QPixmap *ui_logo;
+    QLabel* ui_logo;
     // 标题
-    QLabel *ui_label;
+    QLabel* ui_title;
     // 内容
-    QLabel *ui_content;
+    QLabel* ui_content;
     // 关闭按钮
-    QPushButton *ui_close;
+    QPushButton* ui_close;
+
+    // 标题
+    QString title;
+    // 内容
+    QString content;
+    // 样式
+    QString style;
 
 }; // class AlertPrivate
 

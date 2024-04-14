@@ -1,5 +1,18 @@
 <RCC>
 	<qresource prefix="/qlw">
-		<file>icons/success.svg</file>
+		<file>icons/light/success.svg</file>
+		<file>icons/light/info.svg</file>
+		<file>icons/light/error.svg</file>
+		<file>icons/light/close.svg</file>
+
+		<file>icons/dark/success.svg</file>
+		<file>icons/dark/info.svg</file>
+		<file>icons/dark/error.svg</file>
+		<file>icons/dark/close.svg</file>
+
+
+		<file>qss/light/alert.qss</file>
+
+		<file>qss/dark/alert.qss</file>
 	</qresource>
 </RCC>

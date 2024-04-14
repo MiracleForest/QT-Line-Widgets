@@ -9,5 +9,5 @@ target("qt_line_widgets_static")
     add_files("res/resource.qrc")
     add_files("./common/**.h", "./common/**.cc")
     add_files("./components/**.h", "./components/**.cc")
-    add_frameworks("QtGui", "QtCore", "QtWidgets")
+    add_frameworks("QtGui", "QtCore", "QtWidgets", "QtSvg")
 -- todo

@@ -1,0 +1,22 @@
+QDialog {
+	background-color: rgb(23, 24, 26);
+	color: rgb(235, 235, 235);
+	border: 1px solid rgba(235, 235, 235, 0.3);
+}
+
+QDialog QLabel {
+	color: rgb(235, 234, 236);
+}
+
+QDialog QLabel#alert_logo {
+	background-color: transparent;
+}
+
+QDialog QLabel#alert_content {
+	color: rgba(235, 234, 236, 0.9);
+}
+
+QDialog QPushButton {
+	background-color: transparent;
+	border: none;
+}

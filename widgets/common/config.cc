@@ -9,10 +9,10 @@
 namespace QLW
 {
 
-const char *Config::THEME_KEY = "theme";
-Config *Config::Self = nullptr;
+const char* Config::THEME_KEY = "theme";
+Config* Config::Self = nullptr;
 
-Config::Config(const QString &path)
+Config::Config(const QString& path)
     : _path(path)
 {
     this->load();
@@ -20,7 +20,7 @@ Config::Config(const QString &path)
 
 Config::~Config() { this->save(); }
 
-Config *Config::instance(const QString &path)
+Config* Config::instance(const QString& path)
 {
     if (Config::Self == nullptr) {
         static QMutex mutex;
@@ -77,7 +77,7 @@ Theme Config::getTheme() const
 
 void Config::setTheme(Theme theme)
 {
-    const char *t = (theme == Theme::DARK) ? "dark" : "light";
+    const char* t = (theme == Theme::DARK) ? "dark" : "light";
     _cfg[THEME_KEY] = t;
     emit on_ThemeChanged(theme);
 }

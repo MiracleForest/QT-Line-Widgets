@@ -4,6 +4,8 @@ BasedOnStyle: LLVM
 IndentWidth: 4
 UseTab: Never
 
+# 指针对齐
+PointerAlignment: Left
 # 访问限定符偏移
 AccessModifierOffset: -4
 # 不使用 \r\n 

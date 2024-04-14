@@ -32,7 +32,7 @@ signals:
 
 public:
     ~Config();
-    static Config *instance(const QString &path = "config/config.json");
+    static Config* instance(const QString& path = "config/config.json");
     // 保存配置
     void save();
     // 获取主题
@@ -43,13 +43,13 @@ public:
     Json operator()() { return _cfg; }
 
 private:
-    explicit Config(const QString &path);
+    explicit Config(const QString& path);
     void load();
 
 private:
-    static Config *Self;
+    static Config* Self;
 
-    static const char *THEME_KEY;
+    static const char* THEME_KEY;
 
 private:
     // 配置文件路径
