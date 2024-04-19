@@ -1,7 +1,8 @@
-QDialog {
+QDialog QFrame#alert_box {
 	background-color: #f0f0f0;
 	color: rgb(23, 24, 26);
 	border: 1px solid rgba(23, 25, 26, 0.3);
+	border-radius: 8px;
 }
 
 QDialog QLabel {

@@ -3,6 +3,7 @@
 #include "common/style_sheet.h"
 #include "common/utils.h"
 
+#include <QFrame>
 #include <QGridLayout>
 #include <QLabel>
 #include <QPainter>
@@ -27,8 +28,9 @@ void AlertPrivate::init()
 {
     Q_Q(Alert);
 
-    q->setWindowFlags(Qt::FramelessWindowHint);
+    q->setWindowFlags(Qt::Dialog | Qt::FramelessWindowHint);
     q->setAttribute(Qt::WA_Hover);
+    q->setAttribute(Qt::WA_TranslucentBackground);
 
     // Init UI
     auto theme = Config::instance()->getTheme();
@@ -44,7 +46,7 @@ void AlertPrivate::init()
     }
 
     ui_logo->setObjectName("alert_logo");
-    ui_logo->setPixmap(LoadSvgIcon(logo_path).pixmap({32, 32}));
+    ui_logo->setPixmap(QIcon(logo_path).pixmap({32, 32}));
 
     ui_title->setObjectName("alert_title");
     auto font_title = ui_title->font();
@@ -54,10 +56,10 @@ void AlertPrivate::init()
     ui_content->setObjectName("alert_content");
     ui_close->setObjectName("alert_close");
     ui_close->setCursor(Qt::PointingHandCursor);
-    ui_close->setIcon(LoadSvgIcon(GetThemeIconResFile("close.svg", theme)));
+    ui_close->setIcon(QIcon(GetThemeIconResFile("close.svg", theme)));
     ui_close->setIconSize({16, 16});
 
-    auto ui_layout = new QGridLayout(q);
+    auto ui_layout = new QGridLayout();
     ui_layout->addWidget(ui_logo, 0, 0);
     ui_layout->addWidget(ui_title, 0, 1, 1, 3);
     ui_layout->addWidget(ui_content, 1, 1, 1, 3);
@@ -67,7 +69,13 @@ void AlertPrivate::init()
     ui_layout->setHorizontalSpacing(20);
     ui_layout->setVerticalSpacing(10);
     ui_layout->setContentsMargins(10, 10, 10, 10);
-    q->setLayout(ui_layout);
+
+    auto frame = new QFrame();
+    frame->setObjectName("alert_box");
+    auto dialog_layout = new QVBoxLayout();
+    dialog_layout->addWidget(frame);
+    frame->setLayout(ui_layout);
+    q->setLayout(dialog_layout);
 
     QObject::connect(q, &Alert::on_titleChanged, [this](const QString& title) {
         this->ui_title->setText(title);
